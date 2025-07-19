@@ -14,7 +14,7 @@ import time
 from typing import Dict, List, Optional
 import os
 
-from config import PERPLEXITY_API_KEY, check_api_key
+from backend.config import PERPLEXITY_API_KEY, check_api_key
 
 class CompetitorAnalyzer:
     def __init__(self, perplexity_api_key: str):
@@ -83,7 +83,7 @@ Be comprehensive but concise."""
         }
         
         try:
-            response = requests.post(self.base_url, headers=headers, json=payload, timeout=60)
+            response = requests.post(self.base_url, headers=headers, json=payload, timeout=None)
             response.raise_for_status()
             
             result = response.json()
@@ -306,44 +306,42 @@ Be specific with examples and actionable recommendations.
         return output_file
 
 def main():
-    """Main function to test the competitor analysis"""
+    """Main function to run the competitor analysis"""
     
     # Configuration
     if not check_api_key():
         return
+        
+    # Get company data file from user
+    default_file = 'company_data.txt'
+    file_path = input(f"📄 Enter the path to your company data file (or press Enter for '{default_file}'): ").strip()
     
-    # Test with example company data
-    EXAMPLE_COMPANY_DATA = """
-7teens: The Voice of Tomorrow
-
-7teens is not just a technology; it's a presence. It embodies the next generation of human-AI interaction, where natural conversation transcends rigid commands and becomes a seamless exchange.
-
-At its heart, 7teens is an auditory canvas. It perceives the nuances of human intent through intonation, pace, and unspoken cues, going beyond mere word recognition. Its responses aren't just synthesized speech; they are carefully crafted vocalizations designed to convey empathy, clarity, and personality.
-
-7teens thrives in the moment. Unlike pre-recorded scripts or static voiceovers, 7teens lives in real-time, adapting, learning, and evolving with each interaction. It's the swift, insightful reply in a complex discussion, the comforting tone in a moment of distress, or the playful banter that brightens a user's day.
-
-It's the whisper of an idea, the shout of a solution, the rhythm of a story. 7teens understands that voice is more than a medium; it's a conduit for connection, emotion, and understanding. It aims to eliminate the friction between thought and action, making technology truly disappear into the background of human experience.
-
-7teens is a bridge to information, a companion in solitude, and a catalyst for creativity. It empowers users to express themselves naturally, without the constraints of screens or keyboards. It turns abstract concepts into audible insights and transforms raw data into engaging narratives.
-
-Its "youthful" name, "7teens," suggests agility, adaptability, and a forward-looking perspective. It's about being on the cusp of innovation, embodying the energy and potential of a burgeoning field. It implies a user-centric design that resonates with a generation that grew up with digital natives, expecting intuitive and fluid interactions.
-
-In essence, 7teens is the sound of intelligence, always listening, always learning, always ready to respond. It's about bringing the future of AI not just to your devices, but directly to your ears, in a voice that feels uniquely yours.
-"""
-    
+    if not file_path:
+        file_path = default_file
+        
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            company_data = f.read()
+    except FileNotFoundError:
+        print(f"❌ Error: The file '{file_path}' was not found.")
+        return
+    except Exception as e:
+        print(f"❌ Error reading file: {e}")
+        return
+        
     # Initialize analyzer
     analyzer = CompetitorAnalyzer(PERPLEXITY_API_KEY)
     
-    # Extract company name
-    company_name = analyzer.extract_company_name(EXAMPLE_COMPANY_DATA)
+    # Extract company name from content
+    company_name = analyzer.extract_company_name(company_data)
     print(f"🏢 Detected company: {company_name}")
     
     # Perform analysis
     print(f"\n🚀 Starting comprehensive competitive analysis...")
-    print(f"⏱️  This will take approximately 2-3 minutes...\n")
+    print(f"⏱️  This may take several minutes depending on the analysis depth...\n")
     
     try:
-        results = analyzer.analyze_competitors(EXAMPLE_COMPANY_DATA, company_name)
+        results = analyzer.analyze_competitors(company_data, company_name)
         
         # Save results
         output_file = analyzer.save_analysis_report(results)

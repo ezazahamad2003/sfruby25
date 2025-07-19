@@ -121,4 +121,11 @@ dmypy.json
 .pytype/
 
 # Cython debug symbols
-cython_debug/ 
+cython_debug/
+
+# Frontend directory (excluded from version control)
+frontend/
+
+# Flask uploads and reports
+backend/uploads/
+backend/reports/ 
