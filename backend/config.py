@@ -5,10 +5,6 @@ from dotenv import load_dotenv
 current_dir = os.path.dirname(os.path.abspath(__file__))
 env_path = os.path.join(current_dir, '.env')
 
-# Load environment variables from .env file if it exists
-print(f"🔍 Looking for .env file at: {env_path}")
-print(f"📁 File exists: {os.path.exists(env_path)}")
-
 # Try loading with dotenv first
 load_dotenv(env_path)
 
@@ -27,9 +23,6 @@ if not os.getenv('PERPLEXITY_API_KEY'):
 
 # Perplexity API Configuration
 PERPLEXITY_API_KEY = os.getenv('PERPLEXITY_API_KEY')
-print(f"🔑 API Key loaded: {'Yes' if PERPLEXITY_API_KEY else 'No'}")
-if PERPLEXITY_API_KEY:
-    print(f"🔑 Key starts with: {PERPLEXITY_API_KEY[:10]}...")
 
 # You can also set the API key directly here for testing
 # PERPLEXITY_API_KEY = "your_actual_api_key_here"
