@@ -63,23 +63,22 @@ class CompetitorAnalyzer:
         
         full_query = f"{context}\n\n{query}" if context else query
         
+        system_prompt = """You are an expert competitive intelligence analyst. 
+Provide detailed, actionable insights with specific examples, numbers, and data points. 
+Always cite your sources and include URLs when available.
+Focus on practical business intelligence that can drive strategic decisions.
+Be comprehensive but concise."""
+        
+        final_prompt = f"{system_prompt}\n\n{full_query}"
+
         payload = {
-            "model": "llama-3.1-sonar-small-128k-online",
+            "model": "sonar-deep-research",
             "messages": [
                 {
-                    "role": "system",
-                    "content": """You are an expert competitive intelligence analyst. 
-                    Provide detailed, actionable insights with specific examples, numbers, and data points. 
-                    Always cite your sources and include URLs when available.
-                    Focus on practical business intelligence that can drive strategic decisions.
-                    Be comprehensive but concise."""
-                },
-                {
                     "role": "user",
-                    "content": full_query
+                    "content": final_prompt
                 }
             ],
-            "temperature": 0.1,
             "max_tokens": 4000
         }
         
